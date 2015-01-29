@@ -19,6 +19,9 @@ setInterval(play_warning_sound, 10000);
 //play_warning_sound();
 //
 
+
+
+
 var g_basic_url = "http://muggle.tw/ogame_plugin/";
 var g_ogp_html = '\
 <div id="ogp_container" style="position:absolute; top:150px; left:5px; width:200px;z-index:1; border:1px #ccc solid;padding: 3px;"> \
@@ -63,12 +66,36 @@ var g_ogp_html = '\
 </div> \
 ';
 
+function check_alive()
+{
+	console.log("Check Alive");
+	var pre_time = parseInt( localStorage.getItem("time") );
+	var d = new Date();
+	if(d.getTime() - pre_time > 610000)
+	{
+		location.replace("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1");
+	}
+}
+function update_time()
+{
+	var d = new Date();
+	localStorage.setItem("time", d.getTime());
+}
 function ogame_plugin_init()
 {
-	ogp = new ogame_plugin();
-	ogp.init();
 	
-	console.log("Ogame plugin Load success");
+	if(location != "http://s109-us.ogame.gameforge.com/game/index.php?page=overview")
+	{
+		ogp = new ogame_plugin();
+		ogp.init();
+		console.log("Ogame plugin Load success");
+		update_time();
+	}
+	else
+	{
+		setInterval(check_alive, 120000);
+	}
+	
 }
 
 /*
@@ -92,7 +119,7 @@ function ogp_scan_msg(msg)
 	this.interval_id = 0;
 	this.interval_time = 3000;
 	var state = 0;
-	var ship_limit = 6;
+	var ship_limit = 40;
 	
 	this.steps = [
 		{"name": "init", "type": 1},
@@ -138,7 +165,7 @@ function ogp_scan_msg(msg)
 				var c = parseInt(espionage_msgs[g][s][p].need_ship);
 				if(c > ship_limit) c = ship_limit;
 				console.log("Ships", c);
-				attack.push_attack_list(g, s, p, 1, [{ship:"ship_203", count: c}, {ship:"ship_202", count: (c*2)}]);
+				attack.push_attack_list(g, s, p, 1, [{ship:"ship_203", count: c}, {ship:"ship_202", count: (c*5)}]);
 				msg.log(g+":"+s+":"+p+" add to attack list");
 			}
 		}
@@ -146,12 +173,14 @@ function ogp_scan_msg(msg)
 		{
 			msg.log(g+":"+s+":"+p+" Not Safe");
 		}
+		//console.log("Remove ship 202", g, s, p);
+		attack.clear_ship_202(g, s, p);
 	}
 	var calculate_value = function(espionage)
 	{
 		var Metal = 1;
-		var Crystal = 2.5;
-		var Deuterium = 5;
+		var Crystal = 2;
+		var Deuterium = 3;
 		espionage.value = espionage.Material.Metal*Metal + espionage.Material.Crystal*Crystal + espionage.Material.Deuterium*Deuterium;
 		espionage.need_ship = parseInt((espionage.Material.Metal + espionage.Material.Crystal + espionage.Material.Deuterium)/25000);
 	}
@@ -159,8 +188,8 @@ function ogp_scan_msg(msg)
 	{
 		if(espionage.is_save == false)
 		{
-			if(espionage.value > 10*25000)
-			//if(espionage.need_ship > 6)
+			//if(espionage.value > 20*25000)
+			if(espionage.need_ship > 20)
 				attack.push_attack_list(espionage.Material.galaxy, espionage.Material.system, espionage.Material.position, 1, []);
 		}
 	}
@@ -260,7 +289,7 @@ function ogp_scan_msg(msg)
 		$.post(msg_link,{"displayCategory":cate,"displayPage":page,"siteType":0,"ajax":"1"},function(data){
 			if(typeof(displayContent) != "undefined")
 				displayContent(data);
-			
+			data = data.substr( data.search("<form method=") );
 			console.log("load page OK", page);
 			$("body").append( '<div id="tmp_msg_page" style="display:none;">' + data + '</div>' );
 			parse_msg_page( $("#tmp_msg_page"), page);
@@ -282,12 +311,14 @@ function ogp_scan_msg(msg)
 	
 	// state = 0
 	this.init = function(param){
-		if(location.href != msg_link)
-			location.replace(msg_link);
+		//if(location.href != msg_link)
+		//	location.replace(msg_link);
 		state = 1;
 	}
 	// state = 1
 	this.load_page = function(){
+		update_time();
+		
 		state = 2;
 		var done = function(){
 			state = 3;
@@ -297,10 +328,10 @@ function ogp_scan_msg(msg)
 		};
 		console.log("read_msg_page", read_msg_page);
 		var cate = 9;
-		if($("#vier .active #sum7").length == 1)
-			cate = 7;
-		else if($("#vier .active #sum5").length == 1)
-			cate = 5;
+		//if($("#vier .active #sum7").length == 1)
+		//	cate = 7;
+		//else if($("#vier .active #sum5").length == 1)
+		//	cate = 5;
 		
 		load_msg_page(read_msg_page, cate, done, fail);
 	}
@@ -317,10 +348,10 @@ function ogp_scan_msg(msg)
 		else
 		{
 			var cate = 9;
-			if($("#vier .active #sum7").length == 1)
-				cate = 7;
-			else if($("#vier .active #sum5").length == 1)
-				cate = 5;
+			//if($("#vier .active #sum7").length == 1)
+			//	cate = 7;
+			//else if($("#vier .active #sum5").length == 1)
+			//	cate = 5;
 
 			var msg_info = msg_page_info.contents[read_msg_body_idx];
 			var done = function(){
@@ -376,6 +407,7 @@ function ogp_scan_msg(msg)
 	
 	// state = 6
 	this.stop = function(){
+		attack.attack_list_reverse();
 		clearInterval(thisA.interval_id);
 		state = 6;
 		msg.log("scan msg stop");
@@ -593,10 +625,28 @@ function ogp_scan_galaxy(msg)
 		return false;
 	}
 	
+	var sendShips2 = function (h,k,l,g,n,m)
+	{
+		params={mission:h,galaxy:k,system:l,position:g,type:n,shipCount:m,token:miniFleetToken};
+		$.ajax(miniFleetLink, 
+		{
+			data:params,
+			dataType:"json",
+			type:"POST",
+			success:function(a)
+			{
+				if(typeof(a.newToken)!="undefined")
+				{
+					miniFleetToken=a.newToken
+				}
+			}
+		});
+	}
+	
 	this.init = function(param)
 	{
-		if(location.href != galaxy_link)
-			location.replace(galaxy_link);
+		//if(location.href != galaxy_link)
+		//	location.replace(galaxy_link);
 		
 		from_galaxy = parseInt(param[0]);
 		from_system = parseInt(param[1]);
@@ -607,6 +657,8 @@ function ogp_scan_galaxy(msg)
 	
 	this.load_page = function() // state = 1
 	{
+		update_time();
+		
 		state = 2;
 		var done = function(){
 			state = 3;
@@ -630,10 +682,22 @@ function ogp_scan_galaxy(msg)
 	
 	this.send_probe = function() // state = 3
 	{
+		//console.log(sending_idx, page_info.sheep_list.length);
+		if(sending_idx >= page_info.sheep_list.length)
+		{
+			sending_idx = 0;
+			state = 1;
+			var is_end = add_from_system();
+			if(is_end)
+				state = 4;
+			msg.log("State: " + state);
+			return;
+		}
 		if(sending_avilable > 0)
 		{
 			var sheep = page_info.sheep_list[sending_idx];
-			sendShips(sending_mission, sheep.galaxy, sheep.system, sheep.position, 1, sending_probes);
+			//sendShips(sending_mission, sheep.galaxy, sheep.system, sheep.position, 1, sending_probes);
+			sendShips2(sending_mission, sheep.galaxy, sheep.system, sheep.position, 1, sending_probes);
 			msg.log("sendProbe " + sheep.galaxy + ":" + sheep.system + ":" + sheep.position);
 			sending_avilable --;
 			sending_idx ++;
@@ -647,15 +711,7 @@ function ogp_scan_galaxy(msg)
 			};
 			load_page(from_galaxy, from_system, done, done);
 		}
-		if(sending_idx == page_info.sheep_list.length)
-		{
-			sending_idx = 0;
-			state = 1;
-			var is_end = add_from_system();
-			if(is_end)
-				state = 4;
-			msg.log("State: " + state);
-		}
+		
 	}
 	this.stop = function()
 	{
@@ -745,13 +801,15 @@ function ogp_plugin_attack(msg)
 	var url3 = "http://s109-us.ogame.gameforge.com/game/index.php?page=fleet3";
 	var url4 = "http://s109-us.ogame.gameforge.com/game/index.php?page=movement";
 	
-	this.is_repeat = false;
+	this.is_repeat = true;
+	
 	
 	var record = {
 		state: 5,
 		attack_list: [],
 		attack_idx: 0,
 	};
+	this.r = {};
 	this.get_state = function()
 	{
 		return record.state;
@@ -809,7 +867,35 @@ function ogp_plugin_attack(msg)
 		record.attack_list.splice(idx, 1);
 		save_record();
 	}
-	
+	this.attack_list_reverse = function()
+	{
+		record.attack_list.reverse();
+		save_record();
+	}
+	this.clear_ship_202 = function(g, s, p)
+	{
+		var delete_list = [];
+		for(var key in record.attack_list)
+		{
+			var target = record.attack_list[key];
+			if(target.galaxy == g && target.system == s && target.position == p && target.fleets[0].ship == "ship_210")
+			{
+				console.log("Remove ship 202", g, s, p);
+				delete_list.push(key);
+			}
+			if(g == undefined && s == undefined && p == undefined && target.fleets[0].ship == "ship_210")
+			{
+				console.log("Remove ship 202", target.galaxy, target.system, target.position);
+				delete_list.push(key);
+			}
+		}
+		delete_list.reverse();
+		for(var key in delete_list)
+		{
+			record.attack_list.splice(delete_list[key], 1);
+		}
+		save_record();
+	}
 	var change_page = function(href)
 	{
 		save_record();
@@ -833,6 +919,7 @@ function ogp_plugin_attack(msg)
 				change_page(url1);
 			}, 30000);
 		}
+		thisA.r = record;
 	}
 	this.init = function()
 	{
@@ -841,23 +928,29 @@ function ogp_plugin_attack(msg)
 	}
 	this.fleet1 = function()
 	{
+		if(record.attack_idx >= record.attack_list.length)
+			record.attack_idx = 0;
 		if(location.href != url1)
-			change_page(url1);
+		{
+			setTimeout(function(){change_page(url1);}, 3000);
+			return;
+		}
 		if(record.attack_list.length == 0)
 		{
 			msg.log("attack list length == 0");
 			thisA.stop();
 		}
 		// check fleet num
-		var fleets_usage = $("#slots span[title='Used/Total fleet slots']").contents()[1].data.trim().split("/");
+		//var fleets_usage = $("#slots span[title='Used/Total fleet slots']").contents()[1].data.trim().split("/");
+		var fleets_usage = $("#slots span.tooltip").contents()[1].data.trim().split("/");
 		var now_fleets = parseInt(fleets_usage[0]);
 
 		//if(parseInt(fleets_usage[0]) >= parseInt(fleets_usage[1]))
-		if($("#slots .overmark").length != 0 || now_fleets >= 9)
+		if($("#slots .overmark").length != 0 || now_fleets >= 14)
 		{ // no free fleet to use
 			setTimeout(function(){
 				change_page(url1);
-			}, 15000);
+			}, 30000);
 			return;
 		}
 		// start
@@ -865,8 +958,13 @@ function ogp_plugin_attack(msg)
 		var atk_tgt = record.attack_list[record.attack_idx % record.attack_list.length];
 		for (var key in atk_tgt.fleets)
 		{
-			$("#" + atk_tgt.fleets[key].ship).val( Math.ceil(atk_tgt.fleets[key].count) );
+			if(atk_tgt.fleets[key].ship == "ship_203")
+				continue;
+			$("#" + atk_tgt.fleets[key].ship).val( Math.ceil(atk_tgt.fleets[key].count)  );
 		}
+		$("#ship_215").val( 7 );
+		$("#ship_214").val( 2 );
+		
 		setTimeout(function(){ checkShips('shipsChosen'); }, 2000);
 		setTimeout(function(){ trySubmit(); }, 4000);
 		
@@ -930,7 +1028,7 @@ function ogp_plugin_attack(msg)
 	this.start = function(done, fail)
 	{
 		msg.log("Attack Start");
-		record.attack_idx = 0;
+		//record.attack_idx = 0;
 		record.state = 1;
 		run();
 	}
@@ -1084,6 +1182,8 @@ function ogp_auto_flow()
 	{
 		state = 5;
 		localStorage.setItem("flow_step", state);
+		console.log("Flow stop");
+		msg.log("Flow stop");
 	}
 	
 	
