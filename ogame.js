@@ -983,6 +983,7 @@ function ogp_plugin_attack(msg)
 		$("#galaxy").val(atk_tgt.galaxy);
 		$("#system").val(atk_tgt.system);
 		$("#position").val(atk_tgt.position);
+		setTType(1);
 		
 		setTimeout(function(){ updateVariables(); }, 2000);
 		setTimeout(function(){ trySubmit(); }, 4000);
