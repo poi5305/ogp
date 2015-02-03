@@ -1,93 +1,49 @@
 
+var basic_url = "http://localhost/~Andy/ogame/";
 
 
-function ogame_plugin_init()
+function js_loader(scripts, callback)
 {
-	objs_init(db);
-	
-	window.onbeforeunload = function()
+	var load_number = 0;
+	var test_success = function()
 	{
-		db.destructor();
+		load_number++;
+		if(load_number == scripts.length)
+			callback();
+	} 
+	for(var key in scripts)
+	{
+		var url = basic_url + scripts[key];
+		$.getScript(url)
+		.done(function(){
+			test_success();
+		})
+		.fail(function(jqxhr){
+			test_success();
+		});
 	}
 }
-function objs_init(db)
+
+function ogp_init()
 {
+	console.log("ogame_plugin_init");
+	js_loader([
+		"ogp_database.js"
+		,"ogp_job_controler.js"
+		,"ogp_control_panel.js"
+	], function(){
+		objs_init();
+	});
+	
+	
+}
+function objs_init()
+{
+	console.log("objs_init");
 	g_objs = {};
 	g_objs.db = new database();
 	g_objs.job_ctrl = new job_controler(g_objs, g_objs.db);
 }
-function database()
-{
-	var thisA = this;
-	var data = {};
-	
-	this.register = function(obj_data, table)
-	{
-		return thisA.get(table);
-	}
-	
-	this.get = function(table)
-	{
-		var query = localStorage.getItem(table);
-		if(query != null)
-			query = JSON.parse(query);
-		data[table] = query;
-		return query;
-	}
-	this.save = function(table)
-	{
-		if(data[table] != undefined)
-			localStorage.setItem(table, JSON.stringify(data[table]) );
-	}
-	this.destructor = function()
-	{
-		for(var key in data)
-		{
-			thisA.save(key);
-		}
-	}
-	this.constructor = function()
-	{
-		
-	}
-	this.constructor();
-}
 
-function job_controler(objs, db)
-{
-	var thisA = this;
-	var data = db.register("job_controler");
-	var time_interval = 3000;
-	
-	var init_data = function()
-	{
-		if(data == null)
-		{
-			data.job_queue = [];
-		}
-	}
-	
-	this.push = function(obj_name, function_name)
-	{	
-		var job = {"obj_name": obj_name, "function_name": function_name};
-		data.job_queue.push(job);
-	}
-	var run = function()
-	{
-		var fun = function(){};
-		if(data.job_queue.length > 0)
-			job = data.job_queue.shift();
-		objs["obj_name"]["function_name"]();
-	}
-	this.constructor = function()
-	{
-		init_data();
-		setInterval(run, time_interval);
-	}
-	this.constructor();
-}
 
-function page_controler()
-{
-	
-}
+
