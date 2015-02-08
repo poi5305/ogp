@@ -1,0 +1,21 @@
+{
+	"manifest_version": 2,
+	
+	"name": "Ogame Plugin",
+	"description": "Ogame Plugin",
+	"version": "1.0",
+	"content_scripts": [
+		{
+			"matches": ["http://s109-us.ogame.gameforge.com/*"],
+			"css": ["ogame.css"],
+			"js": ["ogame.js"],
+			"run_at": "document_end"
+		}
+	],
+	"web_accessible_resources":[
+		"*.js"
+	],
+	"permissions": [
+		"http://s109-us.ogame.gameforge.com/*"
+	]
+}
