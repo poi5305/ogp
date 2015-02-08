@@ -428,8 +428,7 @@ function ogp_scan_msg(msg)
 function ogp_auto_build(msg)
 {
 	var url = "http://s109-us.ogame.gameforge.com/game/index.php?page=research";
-	var list = [
-	];
+	var list = [];
 	
 	var build_idx = 0;
 	
