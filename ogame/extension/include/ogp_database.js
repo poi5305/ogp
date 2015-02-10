@@ -12,6 +12,8 @@ function database()
 		var query = localStorage.getItem(table);
 		if(query != null)
 			query = JSON.parse(query);
+		else
+			query = {};
 		data[table] = query;
 		return query;
 	}

@@ -43,6 +43,7 @@ function objs_init()
 	g_objs = {};
 	g_objs.db = new database();
 	g_objs.job_ctrl = new job_controler(g_objs, g_objs.db);
+	g_objs.ogp_scan = new ogp_scan_galaxy(g_objs, g_objs.db, g_objs.job_ctrl);
 }
 
 

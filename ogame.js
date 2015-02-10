@@ -2,6 +2,30 @@
 //$.getScript("http://localhost/~Andy/ogame.js", function(){ogame_plugin_init()});
 
 
+function test()
+{
+	
+	var data1 = {galaxy:2,system:265,position:9,type:3,mission:0,speed:10,am204:1}
+	var data2 = {type:1,mission:0,union:0,am204:1,galaxy:2,system:265,position:9,acsValues:"-",speed:10};
+	var data3 = {holdingtime:1,expeditiontime:1,token:"c573575d7fe1aa8ed8826b68bb30f929",galaxy:2,system:265,position:9,type:1,mission:3,union2:0,holdingOrExpTime:0,speed:10,acsValues:"-",am204:1,metal:0,crystal:0,deuterium:0};
+	
+	$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet2", data1, function(r){
+		
+	});
+	
+	$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet3", data2, function(r){
+			r = r.substr( r.search("<input type='hidden' name='token' value='") );
+			var token = r.substr(41, 32);
+			data3.token = token;
+			
+			$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=movement", data3, function(r){
+				console.log("success");
+			});
+			
+		});
+	
+}
+
 //function() {activateItem($(this).attr("ref"))}
 //$("#details109").click()
 //$(".build-it").click()
@@ -13,7 +37,7 @@ function play_warning_sound()
 {
 	//<DIV align=center></DIV>
 	if($("#eventHostile").length != 0 && $("#eventHostile").html() != 0)
-		$("body").append('<embed src="http://localhost/~Andy/Warning_Alarm.mp3" height="1" width="1" autostart="true" loop="infinite" />');
+		$("body").append('<embed src="http://localhost/~Andy/ogp-master/Warning_Alarm.mp3" height="1" width="1" autostart="true" loop="infinite" />');
 }
 setInterval(play_warning_sound, 10000);
 //play_warning_sound();
@@ -955,13 +979,13 @@ function ogp_plugin_attack(msg)
 		{
 			if(atk_tgt.fleets[key].ship == "ship_203")
 				continue;
-			$("#" + atk_tgt.fleets[key].ship).val( Math.ceil(atk_tgt.fleets[key].count)  );
+			$("#" + atk_tgt.fleets[key].ship).val( Math.ceil(atk_tgt.fleets[key].count)+20  );
 		}
-		$("#ship_215").val( 7 );
-		$("#ship_214").val( 2 );
+		//$("#ship_215").val( 7 );
+		//$("#ship_214").val( 2 );
 		
-		setTimeout(function(){ checkShips('shipsChosen'); }, 2000);
-		setTimeout(function(){ trySubmit(); }, 4000);
+		setTimeout(function(){ checkShips('shipsChosen'); }, 1500);
+		setTimeout(function(){ trySubmit(); }, 2000);
 		
 	}
 	this.fleet2 = function()
@@ -980,8 +1004,8 @@ function ogp_plugin_attack(msg)
 		$("#position").val(atk_tgt.position);
 		setTType(1);
 		
-		setTimeout(function(){ updateVariables(); }, 2000);
-		setTimeout(function(){ trySubmit(); }, 4000);
+		setTimeout(function(){ updateVariables(); }, 1500);
+		setTimeout(function(){ trySubmit(); }, 2000);
 		
 		
 	}
@@ -999,8 +1023,8 @@ function ogp_plugin_attack(msg)
 		setTimeout(function(){
 			setSelected(atk_tgt.mission);
 			updateMission( "Attack", "Attacks the fleet and defense of your opponent.", "on", atk_tgt.mission);
-		}, 2000);
-		setTimeout(function(){ trySubmit(); }, 4000);
+		}, 1000);
+		setTimeout(function(){ trySubmit(); }, 2000);
 		
 		record.state = 4;
 		record.attack_idx++;
@@ -1018,7 +1042,7 @@ function ogp_plugin_attack(msg)
 			return;
 		}
 		record.state = 1;
-		setTimeout(function(){ change_page(url1); }, 2000);
+		setTimeout(function(){ change_page(url1); }, 1500);
 	}
 	
 	this.start = function(done, fail)
