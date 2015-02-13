@@ -1,5 +1,11 @@
+// usage
+//$.getScript("http://localhost/~Andy/ogp-master/ogame/extension/include/ogame.js", function(){
+//    ogp_init();
+//});
 
-var basic_url = "http://localhost/~Andy/ogame/";
+
+var basic_url = "http://localhost/~Andy/ogp-master/ogame/extension/include/";
+
 
 
 function js_loader(scripts, callback)
@@ -31,6 +37,7 @@ function ogp_init()
 		"ogp_database.js"
 		,"ogp_job_controler.js"
 		,"ogp_control_panel.js"
+		,"ogp_scan_galaxy.js"
 	], function(){
 		objs_init();
 	});
@@ -43,7 +50,7 @@ function objs_init()
 	g_objs = {};
 	g_objs.db = new database();
 	g_objs.job_ctrl = new job_controler(g_objs, g_objs.db);
-	g_objs.ogp_scan = new ogp_scan_galaxy(g_objs, g_objs.db, g_objs.job_ctrl);
+	g_objs.ogp_scan_galaxy = new ogp_scan_galaxy(g_objs, g_objs.db, g_objs.job_ctrl);
 }
 
 

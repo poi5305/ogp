@@ -3,9 +3,6 @@ function database()
 	var thisA = this;
 	var data = {};
 	
-	this.register = function(obj_data, table)
-	{
-	}
 	
 	this.get = function(table)
 	{
@@ -15,12 +12,15 @@ function database()
 		else
 			query = {};
 		data[table] = query;
-		return query;
+		return {"data": data[table]};
+	}
+	this.print = function(table)
+	{
+		console.log(data[table])
 	}
 	this.save = function(table)
 	{
-		if(data[table] != undefined)
-			localStorage.setItem(table, JSON.stringify(data[table]) );
+		localStorage.setItem(table, JSON.stringify(data[table]) );		
 	}
 	this.destructor = function()
 	{
