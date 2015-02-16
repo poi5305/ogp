@@ -39,6 +39,7 @@ function ogp_init()
 		,"ogp_control_panel.js"
 		,"ogp_scan_galaxy.js"
 		,"ogp_scan_msg.js"
+		,"ogp_attack.js"
 	], function(){
 		objs_init();
 	});
@@ -53,6 +54,7 @@ function objs_init()
 	g_objs.job_ctrl = new job_controler(g_objs, g_objs.db);
 	g_objs.ogp_scan_galaxy = new ogp_scan_galaxy(g_objs, g_objs.db, g_objs.job_ctrl);
 	g_objs.ogp_scan_msg = new ogp_scan_msg(g_objs, g_objs.db, g_objs.job_ctrl);
+	g_objs.ogp_attack = new ogp_attack(g_objs, g_objs.db, g_objs.job_ctrl);
 }
 
 
