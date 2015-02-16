@@ -5,9 +5,8 @@ function s_msg_page()
 {
 	this.contents = [];
 }
-function s_read_msg(page, href, title, id)
+function s_read_msg(href, title, id)
 {
-	this.page = page;
 	this.href = href;
 	this.title = title;
 	this.id = id;
@@ -59,7 +58,7 @@ function ogp_scan_msg(objs, db, jobs)
 			var title = jthis.find(".subject a").html().trim();
 			var id = jthis.find(".actions a.del").attr("rel");
 			
-			var content = new s_read_msg(page, href, title, id);
+			var content = new s_read_msg(href, title, id);
 			msg_page.contents.push(content);
 		});
 		return msg_page;
@@ -92,7 +91,7 @@ function ogp_scan_msg(objs, db, jobs)
 				if(c > ship_limit) c = config.ship_limit;
 				//console.log("Ships", c);
 				//attack.push_attack_list(g, s, p, 1, [{ship:"ship_203", count: c}, {ship:"ship_202", count: (c*5)}]);
-				//msg.log(g+":"+s+":"+p+" add to attack list");
+				console.log(g+":"+s+":"+p+" add to attack list");
 			}
 		}
 		else
@@ -164,7 +163,7 @@ function ogp_scan_msg(objs, db, jobs)
 				displayContent(data);
 			data = data.substr( data.search("<form method=") );
 			$("body").append( '<div id="tmp_msg_page" style="display:none;">' + data + '</div>' );
-			var msg_page = parse_msg_page( $("#tmp_msg_page"), page);
+			var msg_page = parse_msg_page( $("#tmp_msg_page"));
 			$("#tmp_msg_page").remove();
 			if(done) done(msg_page);
 		}).fail(function(){
@@ -186,6 +185,7 @@ function ogp_scan_msg(objs, db, jobs)
 				var content = msg_page.contents[key];
 				content.next = msg_page.contents.length-1 == key;
 				jobs.push(this_class, "read_msg", content, 0);
+				console.log("job push read msg");
 			}
 			//if(msg_page.contents.length != 0)
 			//	jobs.push(this_class, "load_page", d, 0);
@@ -200,7 +200,7 @@ function ogp_scan_msg(objs, db, jobs)
 	{
 		var done = function()
 		{
-			var obj = {displayCategory:cate, displayPage:1, "deleteMessageIds[]":d.id, actionMode:402, ajax:1};
+			var obj = {displayCategory:9, displayPage:1, "deleteMessageIds[]":d.id, actionMode:402, ajax:1};
 			$.post(msg_link, obj, function(){
 				console.log("Delete Msg Success")
 			});
