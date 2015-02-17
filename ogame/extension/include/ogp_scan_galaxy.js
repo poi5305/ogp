@@ -173,7 +173,6 @@ function ogp_scan_galaxy(objs, db, jobs)
 	{
 		var done = function()
 		{
-			console.log("TRUE");
 			if(d.probe.next)
 			{
 				//掃下一頁面
@@ -184,8 +183,11 @@ function ogp_scan_galaxy(objs, db, jobs)
 					d.scan.fs = 1;
 				}
 				if(d.scan.fg > d.scan.tg || d.scan.fs > d.scan.ts)
-					return;
-				jobs.push(this_class, "load_page", d, 0);
+				{
+					
+				}
+				else	
+					jobs.push(this_class, "load_page", d, 0);
 			}
 			job_done();
 		};

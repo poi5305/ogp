@@ -71,7 +71,16 @@ function ogp_scan_msg(objs, db, jobs)
 		espionage.value = espionage.Material.Metal*Metal + espionage.Material.Crystal*Crystal + espionage.Material.Deuterium*Deuterium;
 		espionage.need_ship = parseInt((espionage.Material.Metal + espionage.Material.Crystal + espionage.Material.Deuterium)/25000);
 	}
-	
+	var add_attack_test = function(espionage)
+	{
+		console.log("add_attack_test", espionage.is_save, espionage.need_ship);
+		if(espionage.is_save == false)
+		{
+			//if(espionage.value > 20*25000)
+			if(espionage.need_ship > 20)
+				objs.ogp_attack.push_attack_list(espionage.Material.galaxy, espionage.Material.system, espionage.Material.position, 1, [], true);
+		}
+	}
 	
 	var parse_msg_combat = function(msg, done, fail)
 	{
@@ -88,7 +97,7 @@ function ogp_scan_msg(objs, db, jobs)
 			{
 				espionage_msgs[g][s][p].is_save = true;
 				var c = parseInt(espionage_msgs[g][s][p].need_ship);
-				if(c > ship_limit) c = config.ship_limit;
+				if(c > config.ship_limit) c = config.ship_limit;
 				//console.log("Ships", c);
 				//attack.push_attack_list(g, s, p, 1, [{ship:"ship_203", count: c}, {ship:"ship_202", count: (c*5)}]);
 				console.log(g+":"+s+":"+p+" add to attack list");
@@ -135,7 +144,7 @@ function ogp_scan_msg(objs, db, jobs)
 			espionage_body.Material.Energy = parseInt(aread.find("table td")[7].textContent.trim().replace(".", ""));
 			
 			calculate_value(espionage_body);
-			//add_attack_test(espionage_body);
+			add_attack_test(espionage_body);
 			// Activity
 			
 			// Save msg
@@ -171,7 +180,7 @@ function ogp_scan_msg(objs, db, jobs)
 		});
 	}
 	
-	this.start_scan = function(fg, fs, tg, ts)
+	this.start_scan = function()
 	{
 		var d = {};
 		jobs.push(this_class, "load_page", d, 0);

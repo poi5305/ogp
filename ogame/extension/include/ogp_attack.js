@@ -3,6 +3,7 @@
 
 function s_attack_target(g, s, p, m, f)
 {
+	var thisA = this;
 	this.galaxy = g;
 	this.system = s;
 	this.position = p;
@@ -10,8 +11,8 @@ function s_attack_target(g, s, p, m, f)
 	this.fleets = f;
 	var constructor = function()
 	{
-		if(this.fleets.length == 0)
-			this.fleets.push({ship:"ship_210", count:1});
+		if(thisA.fleets.length == 0)
+			thisA.fleets.push({ship:"ship_210", count:1});
 	}
 	constructor();
 }
@@ -172,10 +173,13 @@ function ogp_attack(objs, db, jobs)
 			fail();
 		});
 	}
-	this.push_attack_list = function(g, s, p, m, f)
+	this.push_attack_list = function(g, s, p, m, f, is_attack)
 	{
 		var attack_target = new s_attack_target(g, s, p, m, f);
-		data.attack_list.push(attack_target);
+		if(is_attack)
+			jobs.push(this_class, "attack", attack_target, 0);
+		else
+			data.attack_list.push(attack_target);
 		console.log(attack_target, g, s, p);
 	}
 	this.start_attack = function()
