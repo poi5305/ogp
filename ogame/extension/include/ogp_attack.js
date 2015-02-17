@@ -8,26 +8,86 @@ function s_attack_target(g, s, p, m, f)
 	this.position = p;
 	this.mission = m;
 	this.fleets = f;
-	this.constructor = function()
+	var constructor = function()
 	{
 		if(this.fleets.length == 0)
 			this.fleets.push({ship:"ship_210", count:1});
 	}
-	this.constructor();
+	constructor();
 }
 function s_attack_setting(list_idx)
 {
 	this.list_idx = list_idx;
 }
-function s_post_fleet1(g, s, p, t)
+function s_post_fleet1(target, g, s, p, t)
 {
+	var thisA = this;
 	this.galaxy = g;
 	this.system = s;
 	this.position = p;
 	this.type = t;
 	this.mission = 0;
 	this.speed = 10;
+	var constructor = function()
+	{
+		for(var i in target.fleets)
+		{
+			var fleet = target.fleets[i];
+			thisA[fleet.ship.replace("ship_", "am")] = fleet.count;
+		}
+	}
+	constructor();
 }
+function s_post_fleet2(target)
+{
+	var thisA = this;
+	this.galaxy = target.galaxy;
+	this.system = target.system;
+	this.position = target.position;
+	this.type = 1;
+	this.mission = 0;
+	this.speed = 10;
+	this.union = 0;
+	this.acsValues = "-";
+	var constructor = function()
+	{
+		for(var i in target.fleets)
+		{
+			var fleet = target.fleets[i];
+			thisA[fleet.ship.replace("ship_", "am")] = fleet.count;
+		}
+	}
+	constructor();
+}
+function s_post_fleet3(target, token)
+{
+	var thisA = this;
+	this.galaxy = target.galaxy;
+	this.system = target.system;
+	this.position = target.position;
+	this.type = 1;
+	this.mission = 1;
+	this.speed = 10;
+	this.union2 = 0;
+	this.acsValues = "-";
+	this.metal = 0;
+	this.crystal = 0;
+	this.deuterium = 0;
+	this.token = token;
+	this.holdingtime = 1;
+	this.expeditiontime = 1;
+	this.holdingOrExpTime = 0;
+	var constructor = function()
+	{
+		for(var i in target.fleets)
+		{
+			var fleet = target.fleets[i];
+			thisA[fleet.ship.replace("ship_", "am")] = fleet.count;
+		}
+	}
+	constructor();
+}
+
 
 function ogp_attack(objs, db, jobs)
 {
@@ -35,7 +95,7 @@ function ogp_attack(objs, db, jobs)
 	var this_class = "ogp_attack";
 	var data = db.get(this_class).data;
 	var config = {
-		fleets_limit: 15
+		fleets_limit: 16
 	};
 	
 	var fleet1_link = "http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1";
@@ -53,9 +113,10 @@ function ogp_attack(objs, db, jobs)
 		db.print(this_class);
 	}
 	
-	var get_parse_fleet1 = function(done, fail)
+	var get_parse_fleet1 = function(target, done, fail)
 	{
-		$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1", function(r){
+		console.log("get_parse_fleet1");
+		$.get(fleet1_link, function(r){
 			r = r.substring( r.search("<!-- CONTENT AREA -->"), r.search("<!-- END CONTENT AREA -->") );
 			$("body").append( '<div id="tmp_content" style="display:none;">' + r + '</div>' );
 			
@@ -68,6 +129,7 @@ function ogp_attack(objs, db, jobs)
 				return;
 			}
 			var data = new s_post_fleet1(
+				target,
 				jSelect.find("input[name=galaxy]").val(),
 				jSelect.find("input[name=system]").val(),
 				jSelect.find("input[name=position]").val(),
@@ -75,23 +137,40 @@ function ogp_attack(objs, db, jobs)
 			);
 			$("#tmp_content").remove();
 			
-			post_parse_fleet2(data, done, fail);
-			
+			post_parse_fleet2(target, data, done, fail);
 		}).fail(function(){
 			fail();
 		});
 	}
-	var post_parse_fleet2 = function(data, done, fail)
+	var post_parse_fleet2 = function(target, data, done, fail)
 	{
-		
+		console.log("get_parse_fleet2");
+		$.post(fleet2_link, data, function(r){
+			post_parse_fleet3(target, done, fail);
+		}).fail(function(){
+			fail();
+		});
 	}
-	var post_parse_fleet3 = function(data, done, fail)
+	var post_parse_fleet3 = function(target, done, fail)
 	{
-		
+		console.log("get_parse_fleet3");
+		var data = new s_post_fleet2(target);
+		$.post(fleet3_link, data, function(r){
+			r = r.substr( r.search("<input type='hidden' name='token' value='") );
+			var token = r.substr(41, 32);
+			post_parse_movement(target, token, done, fail);
+		}).fail(function(){
+			fail();
+		});
 	}
-	var post_parse_movement = function(data, done, fail)
+	var post_parse_movement = function(target, token, done, fail)
 	{
-		
+		var data = new s_post_fleet3(target, token);
+		$.post(fleet4_link, data, function(r){
+			done();
+		}).fail(function(){
+			fail();
+		});
 	}
 	this.push_attack_list = function(g, s, p, m, f)
 	{
@@ -99,22 +178,27 @@ function ogp_attack(objs, db, jobs)
 		data.attack_list.push(attack_target);
 		console.log(attack_target, g, s, p);
 	}
-	this.start_attack = function(list_idx)
+	this.start_attack = function()
 	{
-		var d = new s_attack_setting(list_idx);
-		jobs.push(this_class, "attack", d, 0);
+		//var d = new s_attack_setting(list_idx);
+		//var d = {};
+		for(var i in data.attack_list)
+		{
+			var d = data.attack_list[i];
+			jobs.push(this_class, "attack", d, 0);
+		}
 	}
 	this.attack = function(d)
 	{
 		var done = function()
 		{
-			
+			console.log("Attack Success!");
 		}
 		var fail = function()
 		{
-			
+			//jobs.push(this_class, "attack", d, 0);
 		}
-		get_parse_fleet1(done, fail);
+		get_parse_fleet1(d, done, fail);
 	}
 	
 	
