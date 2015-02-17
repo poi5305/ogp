@@ -149,7 +149,7 @@ function ogp_scan_galaxy(objs, db, jobs)
 		jobs.push(this_class, "load_page", d, 0);
 	}
 	
-	this.load_page = function(d)
+	this.load_page = function(d, job_done)
 	{
 		if(d.scan.fg > d.scan.tg || d.scan.fs > d.scan.ts)
 			return;
@@ -161,13 +161,15 @@ function ogp_scan_galaxy(objs, db, jobs)
 				d.probe = new s_probe(planet.galaxy, planet.system, planet.position, is_next_page);
 				jobs.push(this_class, "send_probe", d, 0);
 			}
+			job_done();
 		};
 		var fail = function(){
 			jobs.push(this_class, "load_page", d, 0);
+			job_done();
 		};
 		load_page(d.scan.fg, d.scan.fs, done, fail);
 	}
-	this.send_probe = function(d)
+	this.send_probe = function(d, job_done)
 	{
 		var done = function()
 		{
@@ -185,11 +187,13 @@ function ogp_scan_galaxy(objs, db, jobs)
 					return;
 				jobs.push(this_class, "load_page", d, 0);
 			}
+			job_done();
 		};
 		var fail = function()
 		{
 			console.log("FALSE");
 			jobs.push(this_class, "send_probe", d, 2000);
+			job_done();
 		};
 		sendShips(6, d.probe.g, d.probe.s, d.probe.p, 1, 1, done, fail);
 	}

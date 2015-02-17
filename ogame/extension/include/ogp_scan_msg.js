@@ -176,7 +176,7 @@ function ogp_scan_msg(objs, db, jobs)
 		var d = {};
 		jobs.push(this_class, "load_page", d, 0);
 	}
-	this.load_page = function(d)
+	this.load_page = function(d, job_done)
 	{
 		var done = function(msg_page)
 		{
@@ -187,16 +187,18 @@ function ogp_scan_msg(objs, db, jobs)
 				jobs.push(this_class, "read_msg", content, 0);
 				console.log("job push read msg");
 			}
+			job_done();
 			//if(msg_page.contents.length != 0)
 			//	jobs.push(this_class, "load_page", d, 0);
 		}
 		var fail = function()
 		{
 			jobs.push(this_class, "load_page", d, 0);
+			job_done();
 		}
 		load_page(9, done, fail);
 	}
-	this.read_msg = function(d)
+	this.read_msg = function(d, job_done)
 	{
 		var done = function()
 		{
@@ -206,10 +208,12 @@ function ogp_scan_msg(objs, db, jobs)
 			});
 			if(d.next)
 				jobs.push(this_class, "load_page", d, 0);
+			job_done();
 		}
 		var fail = function()
 		{
 			jobs.push(this_class, "read_msg", d, 0);
+			job_done();
 		}
 		var parse = done;
 		if(d.title.search("Espionage report") != -1)

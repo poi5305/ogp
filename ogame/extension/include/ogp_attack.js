@@ -181,22 +181,23 @@ function ogp_attack(objs, db, jobs)
 	this.start_attack = function()
 	{
 		//var d = new s_attack_setting(list_idx);
-		//var d = {};
 		for(var i in data.attack_list)
 		{
 			var d = data.attack_list[i];
 			jobs.push(this_class, "attack", d, 0);
 		}
 	}
-	this.attack = function(d)
+	this.attack = function(d, job_done)
 	{
 		var done = function()
 		{
 			console.log("Attack Success!");
+			job_done();
 		}
 		var fail = function()
 		{
 			//jobs.push(this_class, "attack", d, 0);
+			job_done();
 		}
 		get_parse_fleet1(d, done, fail);
 	}

@@ -3,6 +3,7 @@ function job_controler(objs, db)
 	var thisA = this;
 	var this_class = "job_controler";
 	var data = db.get(this_class).data;
+	var lock = false;
 	
 	var time_interval = 3000;
 	
@@ -32,14 +33,21 @@ function job_controler(objs, db)
 	var run = function()
 	{
 		var date = new Date();
+		var done = function()
+		{
+			lock = false;
+		}
 		//var fun = function(){};
-		if(data.job_queue.length > 0)
+		if(data.job_queue.length > 0 && !lock)
 		{
 			job = data.job_queue.shift();
 			console.log("JobRun: ", job.obj_name, job.function_name, job.data);
 			
 			if(date.getTime() >= job.time) // check time ok
-				objs[job.obj_name][job.function_name](job.data);
+			{
+				lock = true
+				objs[job.obj_name][job.function_name](job.data, done);
+			}
 			else
 				data.job_queue.push(job);
 		}
