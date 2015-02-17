@@ -5,24 +5,28 @@
 function test()
 {
 	
-	var data1 = {galaxy:2,system:265,position:9,type:3,mission:0,speed:10,am204:1}
-	var data2 = {type:1,mission:0,union:0,am204:1,galaxy:2,system:265,position:9,acsValues:"-",speed:10};
-	var data3 = {holdingtime:1,expeditiontime:1,token:"c573575d7fe1aa8ed8826b68bb30f929",galaxy:2,system:265,position:9,type:1,mission:3,union2:0,holdingOrExpTime:0,speed:10,acsValues:"-",am204:1,metal:0,crystal:0,deuterium:0};
+	var data1 = {galaxy:2,system:265,position:9,type:3,mission:0,speed:10,am202:1}
+	var data2 = {type:1,mission:0,union:0,am202:1,galaxy:2,system:265,position:9,acsValues:"-",speed:10};
+	var data3 = {holdingtime:1,expeditiontime:1,token:"c573575d7fe1aa8ed8826b68bb30f929",galaxy:2,system:265,position:9,type:1,mission:3,union2:0,holdingOrExpTime:0,speed:10,acsValues:"-",am202:1,metal:0,crystal:0,deuterium:0};
 	
-	$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet2", data1, function(r){
-		
+	$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1", function(r){
+		$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet2", data1, function(r){
+			$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet3", data2, function(r){
+				r = r.substr( r.search("<input type='hidden' name='token' value='") );
+				var token = r.substr(41, 32);
+				data3.token = token;
+				
+				$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=movement", data3, function(r){
+					console.log("success");
+				});
+				
+			});
+		});
 	});
 	
-	$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet3", data2, function(r){
-			r = r.substr( r.search("<input type='hidden' name='token' value='") );
-			var token = r.substr(41, 32);
-			data3.token = token;
-			
-			$.post("http://s109-us.ogame.gameforge.com/game/index.php?page=movement", data3, function(r){
-				console.log("success");
-			});
-			
-		});
+	
+	
+	
 	
 }
 var test2 = function (h,k,l,g,n,m)
@@ -127,7 +131,7 @@ function ogame_plugin_init()
 {
 	if(location.href.search('page=overview&PHPSESSID=') != -1)
 	{
-		location.replace('http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1&cp=34169685');
+		location.replace('http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1&cp=34161925');
 	}
 	else if(location != "http://s109-us.ogame.gameforge.com/game/index.php?page=overview")
 	{
@@ -984,7 +988,7 @@ function ogp_plugin_attack(msg)
 		var now_fleets = parseInt(fleets_usage[0]);
 
 		//if(parseInt(fleets_usage[0]) >= parseInt(fleets_usage[1]))
-		if($("#slots .overmark").length != 0 || now_fleets >= 14)
+		if($("#slots .overmark").length != 0 || now_fleets >= 15)
 		{ // no free fleet to use
 			setTimeout(function(){
 				change_page(url1);
@@ -998,7 +1002,7 @@ function ogp_plugin_attack(msg)
 		{
 			if(atk_tgt.fleets[key].ship == "ship_203")
 				continue;
-			$("#" + atk_tgt.fleets[key].ship).val( Math.ceil(atk_tgt.fleets[key].count) + 120  );
+			$("#" + atk_tgt.fleets[key].ship).val( Math.ceil(atk_tgt.fleets[key].count) +100 );
 		}
 		//$("#ship_215").val( 7 );
 		//$("#ship_214").val( 2 );
