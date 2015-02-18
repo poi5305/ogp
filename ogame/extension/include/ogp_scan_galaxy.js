@@ -161,6 +161,17 @@ function ogp_scan_galaxy(objs, db, jobs)
 				d.probe = new s_probe(planet.galaxy, planet.system, planet.position, is_next_page);
 				jobs.push(this_class, "send_probe", d, 0);
 			}
+			if(page_info.sheep_list.length == 0)
+			{
+				d.scan.fs++;
+				if(d.scan.fs > 500)
+				{
+					d.scan.fg ++;
+					d.scan.fs = 1;
+				}
+				if(d.scan.fg <= d.scan.tg && d.scan.fs <= d.scan.ts)
+					jobs.push(this_class, "load_page", d, 0);
+			}
 			job_done();
 		};
 		var fail = function(){
@@ -174,19 +185,14 @@ function ogp_scan_galaxy(objs, db, jobs)
 		var done = function()
 		{
 			if(d.probe.next)
-			{
-				//掃下一頁面
+			{ //掃下一頁面
 				d.scan.fs++;
 				if(d.scan.fs > 500)
 				{
 					d.scan.fg ++;
 					d.scan.fs = 1;
 				}
-				if(d.scan.fg > d.scan.tg || d.scan.fs > d.scan.ts)
-				{
-					
-				}
-				else	
+				if(d.scan.fg <= d.scan.tg && d.scan.fs <= d.scan.ts)
 					jobs.push(this_class, "load_page", d, 0);
 			}
 			job_done();

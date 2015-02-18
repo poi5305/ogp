@@ -36,7 +36,8 @@ function ogp_scan_msg(objs, db, jobs)
 	var this_class = "ogp_scan_msg";
 	var data = db.get(this_class).data;
 	var config = {
-		ship_limit: 50
+		ship_limit: 100,
+		ship_min: 18
 	};
 	
 	var msg_link = "http://s109-us.ogame.gameforge.com/game/index.php?page=messages";
@@ -69,17 +70,17 @@ function ogp_scan_msg(objs, db, jobs)
 		var Crystal = 2;
 		var Deuterium = 2.5;
 		espionage.value = espionage.Material.Metal*Metal + espionage.Material.Crystal*Crystal + espionage.Material.Deuterium*Deuterium;
-		espionage.need_ship = parseInt((espionage.Material.Metal + espionage.Material.Crystal + espionage.Material.Deuterium)/25000);
+		espionage.need_ship = parseInt((espionage.Material.Metal + espionage.Material.Crystal + espionage.Material.Deuterium)/25000/2);
 	}
 	var add_attack_test = function(espionage)
 	{
 		console.log("add_attack_test", espionage.is_save, espionage.need_ship);
-		if(espionage.is_save == false)
-		{
+		//if(espionage.is_save == false)
+		//{
 			//if(espionage.value > 20*25000)
-			if(espionage.need_ship > 20)
+			if(espionage.need_ship >= config.ship_min)
 				objs.ogp_attack.push_attack_list(espionage.Material.galaxy, espionage.Material.system, espionage.Material.position, 1, [], true);
-		}
+		//}
 	}
 	
 	var parse_msg_combat = function(msg, done, fail)
@@ -99,8 +100,11 @@ function ogp_scan_msg(objs, db, jobs)
 				var c = parseInt(espionage_msgs[g][s][p].need_ship);
 				if(c > config.ship_limit) c = config.ship_limit;
 				//console.log("Ships", c);
+				objs.ogp_attack.push_attack_list(g, s, p, 1, [{ship:"ship_202", count: (c*5)}], true);//small
+				//objs.ogp_attack.push_attack_list(g, s, p, 1, [{ship:"ship_203", count: (c)}], true);//large
 				//attack.push_attack_list(g, s, p, 1, [{ship:"ship_203", count: c}, {ship:"ship_202", count: (c*5)}]);
 				console.log(g+":"+s+":"+p+" add to attack list");
+				espionage_msgs[g][s][p] = undefined; // clear list
 			}
 		}
 		else
@@ -138,10 +142,10 @@ function ogp_scan_msg(objs, db, jobs)
 			espionage_body.Material.position = p;
 			
 			var aread = jMaterial.find(".areadetail");
-			espionage_body.Material.Metal = parseInt(aread.find("table td")[1].textContent.trim().replace(".", ""));
-			espionage_body.Material.Crystal = parseInt(aread.find("table td")[3].textContent.trim().replace(".", ""));
-			espionage_body.Material.Deuterium = parseInt(aread.find("table td")[5].textContent.trim().replace(".", ""));
-			espionage_body.Material.Energy = parseInt(aread.find("table td")[7].textContent.trim().replace(".", ""));
+			espionage_body.Material.Metal = parseInt(aread.find("table td")[1].textContent.trim().replace(/\./g,""));
+			espionage_body.Material.Crystal = parseInt(aread.find("table td")[3].textContent.trim().replace(/\./g,""));
+			espionage_body.Material.Deuterium = parseInt(aread.find("table td")[5].textContent.trim().replace(/\./g,""));
+			espionage_body.Material.Energy = parseInt(aread.find("table td")[7].textContent.trim().replace(/\./g,""));
 			
 			calculate_value(espionage_body);
 			add_attack_test(espionage_body);
@@ -149,7 +153,6 @@ function ogp_scan_msg(objs, db, jobs)
 			
 			// Save msg
 			espionage_msgs[g][s][p] = espionage_body;
-			console.log(espionage_msgs);
 		}, done, fail);
 	}
 	var load_msg_body = function(href, parse, done, fail)
@@ -196,6 +199,10 @@ function ogp_scan_msg(objs, db, jobs)
 				jobs.push(this_class, "read_msg", content, 0);
 				console.log("job push read msg");
 			}
+			if(msg_page.contents.length == 0)
+			{
+				jobs.push(this_class, "load_page", d, 10000);
+			}
 			job_done();
 			//if(msg_page.contents.length != 0)
 			//	jobs.push(this_class, "load_page", d, 0);
@@ -216,7 +223,7 @@ function ogp_scan_msg(objs, db, jobs)
 				console.log("Delete Msg Success")
 			});
 			if(d.next)
-				jobs.push(this_class, "load_page", d, 0);
+				jobs.push(this_class, "load_page", d, 0);//254
 			job_done();
 		}
 		var fail = function()

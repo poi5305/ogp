@@ -180,7 +180,6 @@ function ogp_attack(objs, db, jobs)
 			jobs.push(this_class, "attack", attack_target, 0);
 		else
 			data.attack_list.push(attack_target);
-		console.log(attack_target, g, s, p);
 	}
 	this.start_attack = function()
 	{
