@@ -3,6 +3,10 @@
 //    ogp_init();
 //});
 
+//g_objs.ogp_scan_galaxy.start_scan(1,1,1,200)
+//g_objs.ogp_scan_msg.start_scan()
+//g_objs.job_ctrl.start()
+
 
 var basic_url = "http://localhost/~Andy/ogp-master/ogame/extension/include/";
 
@@ -40,6 +44,7 @@ function ogp_init()
 		,"ogp_scan_galaxy.js"
 		,"ogp_scan_msg.js"
 		,"ogp_attack.js"
+		,"ogp_skin.js"
 	], function(){
 		objs_init();
 	});
@@ -55,6 +60,7 @@ function objs_init()
 	g_objs.ogp_scan_galaxy = new ogp_scan_galaxy(g_objs, g_objs.db, g_objs.job_ctrl);
 	g_objs.ogp_scan_msg = new ogp_scan_msg(g_objs, g_objs.db, g_objs.job_ctrl);
 	g_objs.ogp_attack = new ogp_attack(g_objs, g_objs.db, g_objs.job_ctrl);
+	g_objs.ogp_skin = new ogp_skin(g_objs, g_objs.db, g_objs.job_ctrl);
 }
 
 
