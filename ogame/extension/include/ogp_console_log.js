@@ -3,7 +3,7 @@ function s_log(type, msg)
 	this.type = type;
 	this.msg = msg;
 }
-function ogp_log(objs, db, jobs)
+function console_log(objs, db)
 {
 	var thisA = this;
 	var jhtml = new jHtml();
@@ -12,7 +12,7 @@ function ogp_log(objs, db, jobs)
 	var config = {
 		display_line: 20,
 		container_id: "#ogp_log",
-		display_mask: 15; // 15:1111  
+		display_mask: 15 // 15:1111  
 	};
 	var log_array = [];
 	var jContainer = $(config.container_id);
@@ -39,7 +39,7 @@ function ogp_log(objs, db, jobs)
 			tmp_html += log_array[key].msg;
 			tmp_html += "</div>";
 		}
-		$(config.container_id).html(tmp_msg);
+		$(config.container_id).html(tmp_html);
 	}
 	var add_log = function(type, msg)
 	{

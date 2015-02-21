@@ -1,4 +1,4 @@
-function job_controler(objs, db)
+function job_controler(objs, db, msg)
 {
 	var thisA = this;
 	var this_class = "job_controler";
@@ -50,8 +50,8 @@ function job_controler(objs, db)
 		if(data.job_queue.length > 0 && !lock)
 		{
 			job = data.job_queue.shift();
-			console.log("JobRun: ", job.obj_name, job.function_name);
-			
+			// console.log("JobRun: ", job.obj_name, job.function_name);
+			msg.log("Run: " + job.obj_name + " "+ job.function_name)
 			if(date.getTime() >= job.time) // check time ok
 			{
 				lock = true

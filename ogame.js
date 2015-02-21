@@ -5,8 +5,8 @@
 function test()
 {
 	
-	var data1 = {galaxy:2,system:265,position:9,type:3,mission:0,speed:10,am202:1}
-	var data2 = {type:1,mission:0,union:0,am202:1,galaxy:2,system:265,position:9,acsValues:"-",speed:10};
+	var data1 = {galaxy:2,system:265,position:9,type:1,mission:0,speed:10,am210:1}
+	var data2 = {type:1,mission:0,union:0,am210:1,galaxy:2,system:265,position:9,acsValues:"-",speed:10};
 	var data3 = {holdingtime:1,expeditiontime:1,token:"c573575d7fe1aa8ed8826b68bb30f929",galaxy:2,system:265,position:9,type:1,mission:3,union2:0,holdingOrExpTime:0,speed:10,acsValues:"-",am202:1,metal:0,crystal:0,deuterium:0};
 	
 	$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1", function(r){
@@ -70,7 +70,7 @@ setInterval(play_warning_sound, 10000);
 
 var g_basic_url = "http://muggle.tw/ogame_plugin/";
 var g_ogp_html = '\
-<div id="ogp_container" style="position:absolute; top:150px; left:5px; width:200px;z-index:1; border:1px #ccc solid;padding: 3px;"> \
+<div id="ogp_container" style="display:none; position:absolute; top:150px; left:5px; width:200px;z-index:1; border:1px #ccc solid;padding: 3px;"> \
 	<span>Ogame plugin</span> \
 	<div id="ogp_menu"> \
 		<div id="ogp_do_scan" style="border:1px #ccc solid"> \

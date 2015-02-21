@@ -2,10 +2,22 @@ var g_skin_button = "<input id='ogp_btn' type='button' value='OGP Menu' style='p
 var g_skin_main = "<div id='ogp_main'></div>";
 var g_skin =
 [
-	{tag: "input#ogp$position:absolute$top:200px$left:20px", value: "OGP Menu", type: "button", click: function(){
-		$("#ogp_main").dialog();
-	}},
-	{tag: "div#ogp_main", html: "Dialog"}
+	{tag: "div#ogp$position:absolute$top:200px$left:20px", kids: [
+		{tag: "input", value: "OGP Menu", type: "button", click: function(){
+			$("#ogp_main").dialog();
+		}},
+		{tag: "div#ogp_log", html: ""}
+	]},
+	{tag: "div#ogp_main$display:none", html: "Dialog", kids:[
+		{tag: "div#ogp_controler", kids:[
+			{tag: "input#ogpc_start", type: "button", value: "Start", click: function(){
+				g_objs.job_ctrl.start();
+			}},
+			{tag: "input#ogpc_start", type: "button", value: "Stop", click: function(){
+				g_objs.job_ctrl.stop();
+			}}
+		]}
+	]}
 ];
 
 function ogp_skin(objs, db, jobs)
@@ -51,7 +63,6 @@ function jHtml()
 		var tag = item.tag;
 		while ( (ptns = reg.exec(tag) ) != null )
 		{
-			console.log(ptns)
 			var ptn = ptns[0]; // first patten
 			var type = ptn[0]; // first word
 			var value = ptn.substr(1);
@@ -68,7 +79,6 @@ function jHtml()
 			else
 				item.tag = ptn;
 		}
-		console.log(item);
 	}
 	var create_dom = function(jSelect, item)
 	{
