@@ -59,10 +59,10 @@ function objs_init()
 	g_objs.db = new database();
 	g_objs.console = new console_log(g_objs, g_objs.db, g_objs.job_ctrl);
 	g_objs.job_ctrl = new job_controler(g_objs, g_objs.db, g_objs.console);
-	g_objs.ogp_scan_galaxy = new ogp_scan_galaxy(g_objs, g_objs.db, g_objs.job_ctrl);
-	g_objs.ogp_scan_msg = new ogp_scan_msg(g_objs, g_objs.db, g_objs.job_ctrl);
-	g_objs.ogp_attack = new ogp_attack(g_objs, g_objs.db, g_objs.job_ctrl);
-	g_objs.ogp_skin = new ogp_skin(g_objs, g_objs.db, g_objs.job_ctrl);
+	g_objs.ogp_scan_galaxy = new ogp_scan_galaxy(g_objs, g_objs.db, g_objs.job_ctrl, g_objs.console);
+	g_objs.ogp_scan_msg = new ogp_scan_msg(g_objs, g_objs.db, g_objs.job_ctrl, g_objs.console);
+	g_objs.ogp_attack = new ogp_attack(g_objs, g_objs.db, g_objs.job_ctrl, g_objs.console);
+	g_objs.ogp_skin = new ogp_skin(g_objs, g_objs.db, g_objs.job_ctrl, g_objs.console);
 }
 
 

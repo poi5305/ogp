@@ -2,7 +2,7 @@ var g_skin_button = "<input id='ogp_btn' type='button' value='OGP Menu' style='p
 var g_skin_main = "<div id='ogp_main'></div>";
 var g_skin =
 [
-	{tag: "div#ogp$position:absolute$top:200px$left:20px", kids: [
+	{tag: "div#ogp$position:absolute$top:510px$left:20px$z-index:999", kids: [
 		{tag: "input", value: "OGP Menu", type: "button", click: function(){
 			$("#ogp_main").dialog();
 		}},
@@ -40,7 +40,6 @@ function ogp_skin(objs, db, jobs)
 		//$("body").append(g_skin_button);
 		
 		jhtml.make($("body"), g_skin);
-		
 	}
 	this.constructor();
 	
@@ -58,7 +57,7 @@ function jHtml()
 	var _tag_parser = function(item)
 	{
 		// Tag parser
-		var reg = new RegExp(/(\w+)|(\#\w+)|(\.\w+)|(\$\w+\:\w+)/gi);
+		var reg = new RegExp(/(\w+)|(\#\w+)|(\.\w+)|(\$[A-Za-z0-9_-]+\:\w+)/gi);
 		var ptns = [];
 		var tag = item.tag;
 		while ( (ptns = reg.exec(tag) ) != null )

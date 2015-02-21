@@ -26,7 +26,7 @@ function s_scan(fg, fs, tg, ts)
 	this.ts = ts;
 }
 
-function ogp_scan_galaxy(objs, db, jobs)
+function ogp_scan_galaxy(objs, db, jobs, msg)
 {
 	var thisA = this;
 	var this_class = "ogp_scan_galaxy";
@@ -141,7 +141,6 @@ function ogp_scan_galaxy(objs, db, jobs)
 		});
 	}
 	
-	
 	this.start_scan = function(fg, fs, tg, ts)
 	{
 		var d = {};
@@ -178,12 +177,14 @@ function ogp_scan_galaxy(objs, db, jobs)
 			jobs.push(this_class, "load_page", d, 0);
 			job_done();
 		};
+		msg.log("LoadGalaxy: " + d.scan.fg + ":" + d.scan.fs);
 		load_page(d.scan.fg, d.scan.fs, done, fail);
 	}
 	this.send_probe = function(d, job_done)
 	{
 		var done = function()
 		{
+			msg.log("SendProb Done: " + d.probe.g + ":" + d.probe.s + ":" + d.probe.p);
 			if(d.probe.next)
 			{ //掃下一頁面
 				d.scan.fs++;
@@ -199,8 +200,8 @@ function ogp_scan_galaxy(objs, db, jobs)
 		};
 		var fail = function()
 		{
-			console.log("FALSE");
-			jobs.push(this_class, "send_probe", d, 2000);
+			msg.log("SendProb Fail: " + d.probe.g + ":" + d.probe.s + ":" + d.probe.p);
+			jobs.push(this_class, "send_probe", d, 4000);
 			job_done();
 		};
 		sendShips(6, d.probe.g, d.probe.s, d.probe.p, 1, 1, done, fail);

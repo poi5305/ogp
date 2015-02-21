@@ -90,7 +90,7 @@ function s_post_fleet3(target, token)
 }
 
 
-function ogp_attack(objs, db, jobs)
+function ogp_attack(objs, db, jobs, msg)
 {
 	var thisA = this;
 	var this_class = "ogp_attack";
@@ -176,6 +176,7 @@ function ogp_attack(objs, db, jobs)
 	this.push_attack_list = function(g, s, p, m, f, is_attack)
 	{
 		var attack_target = new s_attack_target(g, s, p, m, f);
+		msg.log("PushAttack: "+g+":"+s+":"+p+" " + JSON.stringify(attack_target.fleets));
 		if(is_attack)
 			jobs.push(this_class, "attack", attack_target, 0);
 		else
@@ -194,12 +195,13 @@ function ogp_attack(objs, db, jobs)
 	{
 		var done = function()
 		{
-			console.log("Attack Success!");
+			msg.log("Attack Done: "+d.galaxy+":"+d.system+":"+d.position+" " + JSON.stringify(d.fleets));
 			job_done();
 		}
 		var fail = function()
 		{
-			//jobs.push(this_class, "attack", d, 0);
+			msg.log("Attack Fail: "+d.galaxy+":"+d.system+":"+d.position+" " + JSON.stringify(d.fleets));
+			jobs.push(this_class, "attack", d, 0);
 			job_done();
 		}
 		get_parse_fleet1(d, done, fail);

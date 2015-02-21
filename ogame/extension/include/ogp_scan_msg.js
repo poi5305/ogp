@@ -30,7 +30,7 @@ function s_espionage_body()
 	this.Activity = {};
 }
 
-function ogp_scan_msg(objs, db, jobs)
+function ogp_scan_msg(objs, db, jobs, msg)
 {
 	var thisA = this;
 	var this_class = "ogp_scan_msg";
@@ -74,15 +74,22 @@ function ogp_scan_msg(objs, db, jobs)
 	}
 	var add_attack_test = function(espionage)
 	{
-		console.log("add_attack_test", espionage.is_save, espionage.need_ship);
+		//console.log("add_attack_test", espionage.is_save, espionage.need_ship);
+		
 		//if(espionage.is_save == false)
 		//{
 			//if(espionage.value > 20*25000)
 			if(espionage.need_ship >= config.ship_min)
+			{
 				objs.ogp_attack.push_attack_list(espionage.Material.galaxy, espionage.Material.system, espionage.Material.position, 1, [], true);
+				msg.log("AttackTest: ("+espionage.need_ship+") "+espionage.Material.galaxy+":"+espionage.Material.system+":"+espionage.Material.position);
+			}
+			else
+			{
+				msg.log("NoTest: ("+espionage.need_ship+") "+espionage.Material.galaxy+":"+espionage.Material.system+":"+espionage.Material.position);
+			}
 		//}
 	}
-	
 	var parse_msg_combat = function(msg, done, fail)
 	{
 		var espionage_msgs = data.espionage_msgs;
@@ -93,7 +100,7 @@ function ogp_scan_msg(objs, db, jobs)
 		var p = parseInt(area[2]);
 		if(msg.title.search("combatreport_ididattack_iwon") != -1)
 		{
-			console.log("parse_msg_combat", g, s, p);
+			//console.log("parse_msg_combat", g, s, p);
 			if(espionage_msgs[g] != undefined && espionage_msgs[g][s] != undefined && espionage_msgs[g][s][p] != undefined)
 			{
 				espionage_msgs[g][s][p].is_save = true;
@@ -109,7 +116,8 @@ function ogp_scan_msg(objs, db, jobs)
 		}
 		else
 		{
-			console.log(g+":"+s+":"+p+" Not Safe");
+			msg.log("NotSafe: " + g+":"+s+":"+p);
+			//console.log(g+":"+s+":"+p+" Not Safe");
 		}
 		if(done) done();
 		//console.log("Remove ship 202", g, s, p);
@@ -220,7 +228,7 @@ function ogp_scan_msg(objs, db, jobs)
 		{
 			var obj = {displayCategory:9, displayPage:1, "deleteMessageIds[]":d.id, actionMode:402, ajax:1};
 			$.post(msg_link, obj, function(){
-				console.log("Delete Msg Success")
+				//console.log("Delete Msg Success")
 			});
 			if(d.next)
 				jobs.push(this_class, "load_page", d, 0);//254
@@ -236,7 +244,7 @@ function ogp_scan_msg(objs, db, jobs)
 			parse = parse_msg_espionage;
 		else if(d.title.search("Combat Report") != -1)
 			parse = parse_msg_combat;
-			
+		msg.log("ReadMsg: "+d.title);
 		parse(d, done, fail);
 	}
 	
