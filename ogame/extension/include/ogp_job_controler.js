@@ -4,28 +4,37 @@ function job_controler(objs, db, msg)
 	var this_class = "job_controler";
 	var data = db.get(this_class).data;
 	var lock = false;
-	var stop = true;
 	var time_interval = 5000;
-	var time_interval2 = 60305; // for static function use
+	var time_interval2 = 90305; // for static function use
+	var interval = 0;
+	var interval2 = 0;
+	
+	var data_format = {
+		job_queue: [],
+		config: {
+			stop: true
+		}
+	};
 	
 	var init_data = function()
 	{
-		if( $.isEmptyObject(data) )
-		{
-			data.job_queue = [];
-		}
-		console.log(data);
+		merge_object(data, data_format);
 		db.print(this_class);
 	}
 	this.stop = function()
 	{
 		msg.log("JogCtrl: STOP");
-		stop = true;
+		data.config.stop = true;
 	}
 	this.start = function()
 	{
 		msg.log("JogCtrl: START");
-		stop = false;
+		data.config.stop = false;
+	}
+	this.clear = function()
+	{
+		msg.log("JogCtrl: CLEAR JOBS");
+		data.job_queue = [];
 	}
 	this.push = function(obj_name, function_name, d, delay)
 	{	
@@ -43,7 +52,7 @@ function job_controler(objs, db, msg)
 	}
 	var run = function()
 	{
-		if(stop) return;
+		if(data.config.stop) return;
 		
 		var date = new Date();
 		var done = function()
@@ -64,6 +73,10 @@ function job_controler(objs, db, msg)
 			else
 				data.job_queue.push(job);
 		}
+		else
+		{
+			msg.log("Locking or No jobs");
+		}
 	}
 	var listen = function()
 	{
@@ -72,19 +85,36 @@ function job_controler(objs, db, msg)
 		//{"hostile":0,"neutral":0,"friendly":8,"eventTime":340,"eventText":"Attack (R)"}
 		$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",function(d){
 			d = JSON.parse(d);
+			console.log("fetchEventBox", d);
+			msg.warning("=== Hostile: " + d.hostile + " ===");
+			change_interval( Math.ceil(d.friendly/2)*1000 );
 			if(d.hostile != 0)
 			{ // be attack
 				$("body").append('<embed src="http://localhost/~Andy/ogp-master/Warning_Alarm.mp3" height="1" width="1" autostart="true" loop="infinite" />');
 			}
 		},"text");
 		
+		// reset lock
+		lock = false;
+		
 		// Resourse
+		
+		//sendBuildRequest('http://s109-us.ogame.gameforge.com/game/index.php?page=resources&modus=1&type=4&menge=1&token=5f8026e481bbbd26309f30ce2310803a', null, 1);
+		
+	}
+	var change_interval = function(new_time)
+	{
+		time_interval = new_time + 2000;
+		clearInterval(interval);
+		interval = setInterval(run, time_interval);
+		console.log("Change interval: ", time_interval);
+		msg.log("ChangeInterval: " + time_interval);
 	}
 	this.constructor = function()
 	{
 		init_data();
-		setInterval(run, time_interval);
-		setInterval(listen, time_interval2);
+		interval = setInterval(run, time_interval);
+		interval2 = setInterval(listen, time_interval2);
 	}
 	this.constructor();
 }
