@@ -10,12 +10,35 @@ var g_skin =
 	]},
 	{tag: "div#ogp_main$display:none", html: "Dialog", kids:[
 		{tag: "div#ogp_controler", kids:[
+			{tag: "div", html: "Job Controler"},
 			{tag: "input#ogpc_start", type: "button", value: "Start", click: function(){
 				g_objs.job_ctrl.start();
 			}},
 			{tag: "input#ogpc_start", type: "button", value: "Stop", click: function(){
 				g_objs.job_ctrl.stop();
-			}}
+			}},
+			{tag: "input#ogpc_clear", type: "button", value: "Clear", click: function(){
+				g_objs.job_ctrl.clear();
+			}},
+			{tag: "div", html: "Scan Galaxy"},
+			{tag: "span", html: "From"},
+			{tag: "input#ogpc_sg_fg$width:14px", type: "text", value: "1"},
+			{tag: "input#ogpc_sg_fs$width:30px", type: "text", value: "1"},
+			{tag: "span", html: "To"},
+			{tag: "input#ogpc_sg_tg$width:14px", type: "text", value: "1"},
+			{tag: "input#ogpc_sg_ts$width:30px", type: "text", value: "500"},
+			{tag: "input#ogpc_sg_start", type: "button", value: "Start", click: function(){
+				g_objs.ogp_scan_galaxy.start_scan(
+					$("#ogpc_sg_fg").val(), 
+					$("#ogpc_sg_fs").val(), 
+					$("#ogpc_sg_tg").val(), 
+					$("#ogpc_sg_ts").val()
+				);
+			}},
+			{tag: "div", html: "Scan Msg"},
+			{tag: "input#ogpc_smsg_start", type: "button", value: "Start", click: function(){
+				g_objs.ogp_scan_msg.start_scan()
+			}},
 		]}
 	]}
 ];
