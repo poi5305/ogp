@@ -96,7 +96,7 @@ function ogp_attack(objs, db, jobs, msg)
 	var this_class = "ogp_attack";
 	var data = db.get(this_class).data;
 	var config = {
-		fleets_limit: 16
+		fleets_limit: 15
 	};
 	
 	var fleet1_link = "http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1";
@@ -124,7 +124,8 @@ function ogp_attack(objs, db, jobs, msg)
 			var jSelect = $("#tmp_content");
 			var fleets_usage = jSelect.find("#slots span.tooltip").contents()[1].data.trim().split("/");
 			var now_fleets = parseInt(fleets_usage[0]);
-			if(now_fleets >= config.fleets_limit)
+			console.log("Now_fleets Usage", fleets_usage[0], " Total:", fleets_usage[1]);
+			if(now_fleets >= Math.min( config.fleets_limit, fleets_usage[1]-1) )
 			{
 				fail();
 				return;

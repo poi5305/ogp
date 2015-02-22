@@ -87,7 +87,7 @@ function job_controler(objs, db, msg)
 			d = JSON.parse(d);
 			console.log("fetchEventBox", d);
 			msg.warning("=== Hostile: " + d.hostile + " ===");
-			change_interval( Math.ceil(d.friendly/2)*1000 );
+			change_interval( Math.ceil(d.friendly*d.friendly/20)*1000 );
 			if(d.hostile != 0)
 			{ // be attack
 				$("body").append('<embed src="http://localhost/~Andy/ogp-master/Warning_Alarm.mp3" height="1" width="1" autostart="true" loop="infinite" />');
