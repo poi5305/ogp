@@ -116,7 +116,7 @@ function ogp_scan_msg(objs, db, jobs, msg)
 		}
 		else
 		{
-			msg.log("NotSafe: " + g+":"+s+":"+p);
+			console.log("NotSafe: " + g+":"+s+":"+p);
 			//console.log(g+":"+s+":"+p+" Not Safe");
 		}
 		if(done) done();
