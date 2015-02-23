@@ -28,6 +28,8 @@ function s_espionage_body()
 		Energy: 0
 	};
 	this.Activity = {};
+	this.Detail = {};
+	this.DetailLevel = 1;
 }
 
 function ogp_scan_msg(objs, db, jobs, msg)
@@ -145,6 +147,7 @@ function ogp_scan_msg(objs, db, jobs, msg)
 				espionage_body = espionage_msgs[g][s][p];
 	
 			//Espionage report
+			espionage_body.DetailLevel = 1;
 			espionage_body.Material.galaxy = g;
 			espionage_body.Material.system = s;
 			espionage_body.Material.position = p;
@@ -157,7 +160,23 @@ function ogp_scan_msg(objs, db, jobs, msg)
 			
 			calculate_value(espionage_body);
 			add_attack_test(espionage_body);
+			
 			// Activity
+			
+			// Fleets Defense Building Research
+			if(espionage_body.Detail == undefined)
+				espionage_body.Detail = {};
+			jSelect.find(".key").each(function(){
+				var key = $(this).html();
+				var value = $(this).next().html();
+				espionage_body.Detail[key] = value;
+			});
+			jSelect.find(".area").each(function(){
+				var v = $(this).html();
+				if(v=="fleets" || v=="Defense" || v=="Building" || v=="Research")
+					espionage_body.DetailLevel++;
+			});
+			//console.log(espionage_body.Detail, espionage_body.DetailLevel);
 			
 			// Save msg
 			espionage_msgs[g][s][p] = espionage_body;
@@ -189,6 +208,16 @@ function ogp_scan_msg(objs, db, jobs, msg)
 		}).fail(function(){
 			if(fail) fail();
 		});
+	}
+	this.get_info = function(g, s, p)
+	{
+		var espionage_msgs = data.espionage_msgs;
+		if(espionage_msgs[g] == undefined) espionage_msgs[g] = {};
+		if(espionage_msgs[g][s] == undefined) espionage_msgs[g][s] = {};
+		if(espionage_msgs[g][s][p] == undefined)
+			return false;
+		else
+			return espionage_msgs[g][s][p];
 	}
 	
 	this.start_scan = function()

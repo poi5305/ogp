@@ -206,6 +206,22 @@ function ogp_scan_galaxy(objs, db, jobs, msg)
 			jobs.push(this_class, "send_probe", d, 4000);
 			job_done();
 		};
+		
+		var espionage_body = g_objs.ogp_scan_msg.get_info(d.probe.g, d.probe.s, d.probe.p);
+		if(espionage_body)
+		{ // if storage is too small, ignore it
+			if(espionage_body.Detail != undefined)
+			{
+				var m = espionage_body.Detail["Metal Storage"] | 99;
+				var c = espionage_body.Detail["Crystal Storage"] | 99;
+				if(m+c < 12)
+				{
+					done();
+					return;
+				}
+			}
+		}
+		
 		sendShips(6, d.probe.g, d.probe.s, d.probe.p, 1, 1, done, fail);
 	}
 	this.constructor = function()
