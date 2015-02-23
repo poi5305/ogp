@@ -36,6 +36,7 @@ function js_loader(scripts, callback)
 
 function ogp_init()
 {
+	getAjaxEventbox = function(){};
 	if(location.href.search('page=overview&PHPSESSID=') != -1)
 	{
 		location.replace('http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1&cp=34164909');

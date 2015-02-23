@@ -4,10 +4,13 @@ function job_controler(objs, db, msg)
 	var this_class = "job_controler";
 	var data = db.get(this_class).data;
 	var lock = false;
+	var lock2 = false;
 	var time_interval = 5000;
-	var time_interval2 = 90305; // for static function use
+	var time_interval2 = 120305; // for static function use
+	var time_interval3 = 542000; // for refresh
 	var interval = 0;
 	var interval2 = 0;
+	var interval3 = 0;
 	
 	var data_format = {
 		job_queue: [],
@@ -70,7 +73,7 @@ function job_controler(objs, db, msg)
 			lock = false;
 		}
 		//var fun = function(){};
-		if(data.job_queue.length > 0 && !lock)
+		if(data.job_queue.length > 0 && !lock && !lock2)
 		{
 			job = data.job_queue[0];
 			// console.log("JobRun: ", job.obj_name, job.function_name);
@@ -96,7 +99,6 @@ function job_controler(objs, db, msg)
 	}
 	var listen = function()
 	{
-		lock2 = true;
 		// check attack
 		//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",function(d){
 			//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",reloadEventbox,"text");
@@ -107,11 +109,11 @@ function job_controler(objs, db, msg)
 			if(typeof(reloadEventbox) != "undefined")
 				reloadEventbox(d);
 				
-			msg.log("Fleets", d);
+			msg.log("Fleets"+ d);
 			console.log("Fleets", d);
 			d = JSON.parse(d);
 			msg.warning("=== Hostile: " + d.hostile + " ===");
-			change_interval( Math.ceil(d.friendly*d.friendly/18)*1000 );
+			change_interval( Math.ceil(d.friendly*d.friendly/20)*1000 );
 			if(d.hostile != 0)
 			{ // be attack
 				$("body").append('<embed src="http://localhost/~Andy/ogp-master/Warning_Alarm.mp3" height="1" width="1" autostart="true" loop="infinite" />');
@@ -137,9 +139,18 @@ function job_controler(objs, db, msg)
 		//sendBuildRequest('http://s109-us.ogame.gameforge.com/game/index.php?page=resources&modus=1&type=4&menge=1&token=5f8026e481bbbd26309f30ce2310803a', null, 1);
 		
 	}
+	var refresh = function()
+	{
+		lock2 = true;
+		console.log("Reflashing......");
+		msg.log("Reflashing......");
+		setTimeout(function(){
+			location.replace("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1");
+		}, 5000);
+	}
 	var change_interval = function(new_time)
 	{
-		time_interval = new_time + 3000;
+		time_interval = new_time + 2000;
 		clearInterval(interval);
 		interval = setInterval(run, time_interval);
 		console.log("Change interval: ", time_interval);
@@ -150,6 +161,7 @@ function job_controler(objs, db, msg)
 		init_data();
 		interval = setInterval(run, time_interval);
 		interval2 = setInterval(listen, time_interval2);
+		interval3 = setInterval(refresh, time_interval3);
 	}
 	this.constructor();
 }

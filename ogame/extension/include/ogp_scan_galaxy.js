@@ -125,6 +125,8 @@ function ogp_scan_galaxy(objs, db, jobs, msg)
 			{
 				if(typeof(a.newToken)!="undefined")
 					miniFleetToken=a.newToken;
+				if(a.response == undefined)
+					if(fail) fail();
 				if(a.response.success == true)
 				{
 					if(done) done();
