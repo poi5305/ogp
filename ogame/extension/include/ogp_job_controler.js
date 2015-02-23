@@ -36,6 +36,15 @@ function job_controler(objs, db, msg)
 		msg.log("JogCtrl: CLEAR JOBS");
 		data.job_queue = [];
 	}
+	this.print = function()
+	{
+		for(var key in data.job_queue)
+		{
+			var job = data.job_queue[key];
+			console.log("Job: ", job.obj_name, job.function_name, job.data, JSON.stringify(job.data));
+			msg.log("Job: "+ job.obj_name +" "+ job.function_name +" "+ JSON.stringify(job.data).substr(0, 20));
+		}
+	}
 	this.push = function(obj_name, function_name, d, delay)
 	{	
 		var date = new Date();
@@ -57,12 +66,13 @@ function job_controler(objs, db, msg)
 		var date = new Date();
 		var done = function()
 		{
+			data.job_queue.shift();
 			lock = false;
 		}
 		//var fun = function(){};
 		if(data.job_queue.length > 0 && !lock)
 		{
-			job = data.job_queue.shift();
+			job = data.job_queue[0];
 			// console.log("JobRun: ", job.obj_name, job.function_name);
 			msg.log("=> Run: " + job.obj_name + " "+ job.function_name);
 			if(date.getTime() >= job.time) // check time ok
@@ -73,26 +83,51 @@ function job_controler(objs, db, msg)
 			else
 				data.job_queue.push(job);
 		}
+		else if(data.job_queue.length == 0)
+		{	// auto add jobs
+			g_objs.ogp_scan_galaxy.start_scan(1,1,1,500);
+			g_objs.ogp_scan_msg.start_scan();;
+			msg.log("JobCtrl No jobs");
+		}
 		else
 		{
-			msg.log("Locking or No jobs");
+			msg.log("JobCtrl Locking");
 		}
 	}
 	var listen = function()
 	{
+		lock2 = true;
 		// check attack
-		//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",reloadEventbox,"text");
-		//{"hostile":0,"neutral":0,"friendly":8,"eventTime":340,"eventText":"Attack (R)"}
-		$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",function(d){
+		//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",function(d){
+			//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",reloadEventbox,"text");
+			//{"hostile":0,"neutral":0,"friendly":8,"eventTime":340,"eventText":"Attack (R)"}
+		$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1",function(d){
+			d = d.substring( d.search("reloadEventbox")+15, d.search("function initAjaxResourcebox")-4 );
+
+			if(typeof(reloadEventbox) != "undefined")
+				reloadEventbox(d);
+				
+			msg.log("Fleets", d);
+			console.log("Fleets", d);
 			d = JSON.parse(d);
-			console.log("fetchEventBox", d);
 			msg.warning("=== Hostile: " + d.hostile + " ===");
-			change_interval( Math.ceil(d.friendly*d.friendly/20)*1000 );
+			change_interval( Math.ceil(d.friendly*d.friendly/18)*1000 );
 			if(d.hostile != 0)
 			{ // be attack
 				$("body").append('<embed src="http://localhost/~Andy/ogp-master/Warning_Alarm.mp3" height="1" width="1" autostart="true" loop="infinite" />');
 			}
-		},"text");
+		},"text").fail(function(jqXHR){
+			if(jqXHR.state() == "rejected" && jqXHR.status == 0)
+			{ // logout
+				location.replace("http://us.ogame.gameforge.com/");
+			}
+		}).always(function(){
+		});
+		
+		//update fleets events
+		//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=eventList&ajax=1",function(d){
+		//	$("#eventboxContent").html(d);
+		//},"text");
 		
 		// reset lock
 		lock = false;
@@ -104,7 +139,7 @@ function job_controler(objs, db, msg)
 	}
 	var change_interval = function(new_time)
 	{
-		time_interval = new_time + 2000;
+		time_interval = new_time + 3000;
 		clearInterval(interval);
 		interval = setInterval(run, time_interval);
 		console.log("Change interval: ", time_interval);
@@ -119,3 +154,6 @@ function job_controler(objs, db, msg)
 	this.constructor();
 }
 
+//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",function(d){},"text").fail(function( jqXHR, textStatus, errorThrown ){console.log( jqXHR, textStatus, errorThrown );});
+
+//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1",function(d){ d = d.substring( d.search("reloadEventbox")+15, d.search("function initAjaxResourcebox")-4 ); console.log(d)});

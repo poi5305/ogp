@@ -131,7 +131,7 @@ function ogame_plugin_init()
 {
 	if(location.href.search('page=overview&PHPSESSID=') != -1)
 	{
-		location.replace('http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1&cp=34161925');
+		location.replace('http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1&cp=34164909');
 	}
 	else if(location != "http://s109-us.ogame.gameforge.com/game/index.php?page=overview")
 	{

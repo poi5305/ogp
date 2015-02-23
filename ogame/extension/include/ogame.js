@@ -36,9 +36,14 @@ function js_loader(scripts, callback)
 
 function ogp_init()
 {
+	if(location.href.search('page=overview&PHPSESSID=') != -1)
+	{
+		location.replace('http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1&cp=34164909');
+	}
 	console.log("ogame_plugin_init");
 	js_loader([
-		"ogp_database.js"
+		"utility.js"
+		,"ogp_database.js"
 		,"ogp_console_log.js"
 		,"ogp_job_controler.js"
 		,"ogp_control_panel.js"

@@ -37,7 +37,7 @@ function ogp_scan_msg(objs, db, jobs, msg)
 	var data = db.get(this_class).data;
 	var config = {
 		ship_limit: 100,
-		ship_min: 18
+		ship_min: 20
 	};
 	
 	var msg_link = "http://s109-us.ogame.gameforge.com/game/index.php?page=messages";

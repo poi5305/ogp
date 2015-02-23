@@ -124,9 +124,23 @@ function ogp_attack(objs, db, jobs, msg)
 			var jSelect = $("#tmp_content");
 			var fleets_usage = jSelect.find("#slots span.tooltip").contents()[1].data.trim().split("/");
 			var now_fleets = parseInt(fleets_usage[0]);
-			console.log("Now_fleets Usage", fleets_usage[0], " Total:", fleets_usage[1]);
-			if(now_fleets >= Math.min( config.fleets_limit, fleets_usage[1]-1) )
+			console.log("Now_fleets Usage", fleets_usage[0], " Total:", fleets_usage[1], " Limit:", config.fleets_limit);
+			
+			var fleets_limit = Math.min( config.fleets_limit, fleets_usage[1]-1);
+			
+			if(target.fleets[0].ship == "ship_210")
 			{
+				if(now_fleets == fleets_usage[1])
+				{
+					$("#tmp_content").remove();
+					fail();
+					return;
+				}
+				//OK attack
+			}
+			else if(now_fleets >= fleets_limit || fleets_usage[0]==undefined || fleets_usage[1]==undefined)
+			{
+				$("#tmp_content").remove();
 				fail();
 				return;
 			}

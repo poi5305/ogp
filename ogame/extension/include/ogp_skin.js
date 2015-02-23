@@ -8,7 +8,7 @@ var g_skin =
 		}},
 		{tag: "div#ogp_log", html: ""}
 	]},
-	{tag: "div#ogp_main$display:none", html: "Dialog", kids:[
+	{tag: "div#ogp_main$display:none", html: "Dialog", title: "Ogame Plugin", kids:[
 		{tag: "div#ogp_controler", kids:[
 			{tag: "div", html: "Job Controler"},
 			{tag: "input#ogpc_start", type: "button", value: "Start", click: function(){
@@ -19,6 +19,9 @@ var g_skin =
 			}},
 			{tag: "input#ogpc_clear", type: "button", value: "Clear", click: function(){
 				g_objs.job_ctrl.clear();
+			}},
+			{tag: "input#ogpc_print", type: "button", value: "Print", click: function(){
+				g_objs.job_ctrl.print();
 			}},
 			{tag: "div", html: "Scan Galaxy"},
 			{tag: "span", html: "From"},
