@@ -10,7 +10,7 @@ function console_log(objs, db)
 	var this_class = "ogp_skin";
 	var data = db.get(this_class).data;
 	var config = {
-		display_line: 10,
+		display_line: 20,
 		container_id: "#ogp_log",
 		display_mask: 15 // 15:1111  
 	};
