@@ -26,17 +26,17 @@ function job_controler(objs, db, msg)
 	}
 	this.stop = function()
 	{
-		msg.log("JogCtrl: STOP");
+		msg.warning("JogCtrl: STOP");
 		data.config.stop = true;
 	}
 	this.start = function()
 	{
-		msg.log("JogCtrl: START");
+		msg.warning("JogCtrl: START");
 		data.config.stop = false;
 	}
 	this.clear = function()
 	{
-		msg.log("JogCtrl: CLEAR JOBS");
+		msg.warning("JogCtrl: CLEAR JOBS");
 		data.job_queue = [];
 	}
 	this.print = function()
@@ -45,7 +45,7 @@ function job_controler(objs, db, msg)
 		{
 			var job = data.job_queue[key];
 			console.log("Job: ", job.obj_name, job.function_name, job.data, JSON.stringify(job.data));
-			msg.log("Job: "+ job.obj_name +" "+ job.function_name +" "+ JSON.stringify(job.data).substr(0, 20));
+			msg.debug("Job: "+ job.obj_name +" "+ job.function_name +" "+ JSON.stringify(job.data).substr(0, 20));
 		}
 	}
 	this.push = function(obj_name, function_name, d, delay)
@@ -60,7 +60,7 @@ function job_controler(objs, db, msg)
 			"time": time
 		};
 		data.job_queue.push(job);
-		msg.log("=> JobPush: " + obj_name + " "+ function_name);
+		msg.debug("=> JobPush: " + obj_name + " "+ function_name);
 	}
 	var run = function()
 	{
@@ -77,7 +77,7 @@ function job_controler(objs, db, msg)
 		{
 			job = data.job_queue[0];
 			// console.log("JobRun: ", job.obj_name, job.function_name);
-			msg.log("=> Run: " + job.obj_name + " "+ job.function_name);
+			msg.debug("=> Run: " + job.obj_name + " "+ job.function_name);
 			if(date.getTime() >= job.time) // check time ok
 			{
 				lock = true
@@ -90,11 +90,11 @@ function job_controler(objs, db, msg)
 		{	// auto add jobs
 			g_objs.ogp_scan_galaxy.start_scan(2,1,2,500);
 			g_objs.ogp_scan_msg.start_scan();;
-			msg.log("JobCtrl No jobs");
+			msg.debug("JobCtrl No jobs");
 		}
 		else
 		{
-			msg.log("JobCtrl Locking");
+			msg.debug("JobCtrl Locking");
 		}
 	}
 	var listen = function()
@@ -124,7 +124,7 @@ function job_controler(objs, db, msg)
 			{ // logout
 				lock2 = true;
 				console.log("Has Logout, Reflashing......");
-				msg.log("Has Logout, Reflashing......");
+				msg.warning("Has Logout, Reflashing......");
 				setTimeout(function(){
 					location.replace("http://us.ogame.gameforge.com/");
 				}, 7000);
@@ -150,7 +150,7 @@ function job_controler(objs, db, msg)
 	{
 		lock2 = true;
 		console.log("Reflashing......");
-		msg.log("Reflashing......");
+		msg.warning("Reflashing......");
 		setTimeout(function(){
 			location.replace("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1");
 		}, 7000);
