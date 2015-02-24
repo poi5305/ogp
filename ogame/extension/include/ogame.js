@@ -36,6 +36,7 @@ function js_loader(scripts, callback)
 
 function ogp_init()
 {
+	$("head").append("<link href='"+basic_url+"ogame.css' type='text/css' rel='stylesheet' />");
 	getAjaxEventbox = function(){};
 	if(location.href.search('page=overview&PHPSESSID=') != -1)
 	{
