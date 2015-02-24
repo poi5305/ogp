@@ -88,7 +88,7 @@ function job_controler(objs, db, msg)
 		}
 		else if(data.job_queue.length == 0)
 		{	// auto add jobs
-			g_objs.ogp_scan_galaxy.start_scan(1,1,1,500);
+			g_objs.ogp_scan_galaxy.start_scan(2,1,2,500);
 			g_objs.ogp_scan_msg.start_scan();;
 			msg.log("JobCtrl No jobs");
 		}
@@ -103,6 +103,7 @@ function job_controler(objs, db, msg)
 		//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",function(d){
 			//$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fetchEventbox&ajax=1",reloadEventbox,"text");
 			//{"hostile":0,"neutral":0,"friendly":8,"eventTime":340,"eventText":"Attack (R)"}
+			
 		$.get("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1",function(d){
 			d = d.substring( d.search("reloadEventbox")+15, d.search("function initAjaxResourcebox")-4 );
 
@@ -116,12 +117,18 @@ function job_controler(objs, db, msg)
 			change_interval( Math.ceil(d.friendly*d.friendly/20)*1000 );
 			if(d.hostile != 0)
 			{ // be attack
-				$("body").append('<embed src="http://localhost/~Andy/ogp-master/Warning_Alarm.mp3" height="1" width="1" autostart="true" loop="infinite" />');
+				$("body").append('<embed src="'+warning_mp3+'" height="1" width="1" autostart="true" loop="infinite" />');
 			}
 		},"text").fail(function(jqXHR){
 			if(jqXHR.state() == "rejected" && jqXHR.status == 0)
 			{ // logout
-				location.replace("http://us.ogame.gameforge.com/");
+				lock2 = true;
+				console.log("Has Logout, Reflashing......");
+				msg.log("Has Logout, Reflashing......");
+				setTimeout(function(){
+					location.replace("http://us.ogame.gameforge.com/");
+				}, 7000);
+				
 			}
 		}).always(function(){
 		});
@@ -146,7 +153,7 @@ function job_controler(objs, db, msg)
 		msg.log("Reflashing......");
 		setTimeout(function(){
 			location.replace("http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1");
-		}, 5000);
+		}, 7000);
 	}
 	var change_interval = function(new_time)
 	{

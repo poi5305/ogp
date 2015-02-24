@@ -100,6 +100,7 @@ function ogp_scan_msg(objs, db, jobs, msg)
 		var g = parseInt(area[0]);
 		var s = parseInt(area[1]);
 		var p = parseInt(area[2]);
+		console.log("parse_msg_combat", g, s, p);
 		if(msg.title.search("combatreport_ididattack_iwon") != -1)
 		{
 			//console.log("parse_msg_combat", g, s, p);
@@ -273,7 +274,7 @@ function ogp_scan_msg(objs, db, jobs, msg)
 			parse = parse_msg_espionage;
 		else if(d.title.search("Combat Report") != -1)
 			parse = parse_msg_combat;
-		msg.log("ReadMsg: "+d.title);
+		msg.log("ReadMsg: "+d.title + " " + d.title.search("Combat Report"));
 		parse(d, done, fail);
 	}
 	

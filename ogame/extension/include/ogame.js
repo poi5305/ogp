@@ -9,8 +9,8 @@
 
 
 var basic_url = "http://localhost/~Andy/ogp-master/ogame/extension/include/";
-
-
+var main_cp = "http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1&cp=34164909";
+var warning_mp3 = "http://localhost/~Andy/ogp-master/Warning_Alarm.mp3";
 
 function js_loader(scripts, callback)
 {
@@ -39,7 +39,7 @@ function ogp_init()
 	getAjaxEventbox = function(){};
 	if(location.href.search('page=overview&PHPSESSID=') != -1)
 	{
-		location.replace('http://s109-us.ogame.gameforge.com/game/index.php?page=fleet1&cp=34164909');
+		location.replace(main_cp);
 	}
 	console.log("ogame_plugin_init");
 	js_loader([
